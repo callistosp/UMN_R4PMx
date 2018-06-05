@@ -1,0 +1,124 @@
+---
+title: 'Session 1: Data Assembly'
+author: "Samuel P Callisto"
+date: "June 5, 2018"
+output: html_document
+---
+
+# Using R Markdown
+Source: R Markdown Cheatsheet
+
+### Arguments to modify output
+  include, warning, message, etc.
+
+### Output in LaTeX
+$\theta_{ij}$
+
+## Useful keyboard shortcuts
+Ctrl-Alt-I: Insert new chunk
+Ctrl-Enter: Run current line of code (multiple if highlighted)
+
+# Importing data
+```{r, include = F}
+## install packages if necessary
+if(!("devtools" %in% installed.packages()[,"Package"])) install.packages("devtools")
+if(!("dataTools" %in% installed.packages()[,"Package"])) devtools::install_github("callistosp/dataTools")
+
+## load packages
+library(dataTools)
+
+## Excel files
+excel <- read.csv(file.choose(), as.is = T, stringsAsFactors = T, header = T)
+
+## NONMEM output files
+nonmem <- read.table("C:/Users/Sam/Documents/GitHub/UMN_R4PMx/nonmem.tab", as.is=T)
+```
+I always import ALL datasets and packages in my first chunk of code. This way you don't need to hunt down the line where data was imported, just re-run the first chunk.
+
+# Data types in R
+```{r}
+
+
+```
+
+# Some comments about reproducibility
+## The importance of readability
+A bad example of readability
+```{r}
+
+```
+
+
+A good example of readability
+```{r}
+
+```
+
+### Always write your code as though it were being read by a human, not a computer!
+In addition to liberal commenting throughout your code, do not underestimate the importance of creating descriptive variable names. If a future graduate student takes over your project after you've graduated, will they be able to decipher what your code does without calling you to ask?
+
+## Version control
+### What's that mean?
+Everytime you modify a file, you have created a new "version" of it. Version control allows you to keep a record of all the changes that you have made to a file. This way if you break a script that you have written, you can easily go back to the old version.
+
+### GitHub glossary
+Commit
+Push
+Pull 
+Fork
+Branch
+
+### Repositories
+Can be either public or private. On github.com with a free account you can ONLY create public repositories. These can be seen by anyone. Enterprise or paid version of GitHub allows you to create private repositories which can only be seen by you and collaborators of your choice.
+
+### UMN GitHub
+Students have free access to an Enterprise version of GitHub through UMN. Allows users to have private repositories. Users outside UMN cannot see anything in this account, but you can transfer repositories from the UMN GitHub to a public GitHub account.
+
+# Function Writing
+
+## A simple example
+```{r}
+
+```
+
+## When would I ever use this?
+### Example 1: Dealing with Times
+Problem: RedCap stores my times as a character string ("6:45"), but I want to calculate the difference between observations.
+Temporary Solution
+```{r}
+
+```
+
+### Example 2: Data merging function
+Problem: want to merge datasets with a time-varying covariate. Just using static function does not merge correctly.
+Temporary Solution: write a loop to do it
+```{r}
+
+```
+Permanent Solution: write a function to use this time and the next time you encounter time-varying covariates
+```{r}
+
+```
+Notice how easily the loop can be turned into a function!
+
+
+### Example 3: Helper function
+Problem: importing files with multiple headers causes the data type to be interpretted incorrectly, causing resulting in manual typecasting for multiple rows (annoying!)
+```{r}
+str(read.csv())
+```
+Solution: write a helper function that assigns correct header row while maintaining data types.
+```{r}
+headr <- function(file, header.row=1, data.start=3){
+  headers <- read.csv(file = file, skip=header.row-1, header = F, nrows = 1, as.is = T)
+  dataset <- read.csv(file=file, skip = data.start-1, header = F, as.is=T)
+  names(dataset) <- headers
+  return(dataset)
+}
+
+str(headr())
+```
+Notice how few arguments need to be filled out manually each time you import a file using the helper function since you are allowed to set your defaults.
+
+## A general rule of thumb:
+If you find yourself copying code within or between files, you should probably just write a function. Better still, add functions to a personal R package that you can easily import and share.
