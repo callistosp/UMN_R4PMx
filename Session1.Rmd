@@ -13,6 +13,8 @@ https://www.rstudio.com/resources/cheatsheets/
 Surrounding \\theta_{ij} with "\$" will generate $\theta_{ij}$
 
 ### Useful keyboard shortcuts
+(Mac Users use command instead of Ctrl)
+
 Ctrl-Alt-I: Insert new chunk
 
 Ctrl-Enter: Run current line of code (multiple if highlighted)
@@ -22,7 +24,10 @@ Ctrl-Shift-C: Comment/uncomment selected lines
 ### Importing data
 ```{r, include = F}
 ## install packages if necessary
-if(!(c("devtools","tidyverse") %in% installed.packages()[,"Package"])) install.packages(c("devtools", "tidyverse"))
+packages <- c("devtools","tidyverse")
+if(any(!(packages %in% installed.packages()[,"Package"]))){
+  install.packages(packages[which(!packages %in% installed.packages()[,"Package"])])
+}
 if(!("dataTools" %in% installed.packages()[,"Package"])) devtools::install_github("callistosp/dataTools")
 ```
 ```{r, warning=F, message=F}
