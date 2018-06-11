@@ -49,9 +49,9 @@ excel$var3 <- as.double(excel$var3)
 ```
 Solution: write a wrapper function that assigns correct header row while maintaining data types.
 ```{r}
-headr <- function(file, header.row=1, data.start=3, ...){
+headr <- function(file, header.row=1, data.start=3){
   headers <- read.csv(file = file, skip=header.row-1, header = F, nrows = 1, as.is = T)
-  dataset <- read.csv(file=file, skip = data.start-1, header = F, as.is=T, ...)
+  dataset <- read.csv(file=file, skip = data.start-1, header = F, as.is=T)
   names(dataset) <- headers
   return(dataset)
 }
@@ -63,8 +63,6 @@ topiramateData <- headr("datasets/TPM_sim_dataset_20180607.csv", stringsAsFactor
 str(topiramateData)
 ```
 Notice how few arguments need to be filled out manually each time you import a file using the helper function since you are allowed to set your defaults.
-
-Using the ellipses allows you to pass additional arguments to read.csv()
 
 ### Example 2: Dealing with Times
 Problem: RedCap stores my times as a character string ("6:45"), but I want to calculate the difference between observations.
@@ -97,7 +95,65 @@ http://adv-r.had.co.nz/Functional-programming.html
 ## Unit testing
 How can you check if your function is doing what you think it is? Let's go back to our sumMinusOne() function
 
+### A trivial example revisited
 ```{r}
+test_that("single value minus one",{
+  expect_equal(1, sumMinusOne(2))
+})
 
+test_that("vector sum minus one",{
+  expect_equal(5, sumMinusOne(1:3))
+})
+
+test_that("characters shouldn't work",{
+  expect_error(sumMinusOne("test"))
+})
+```
+
+### Testing our wrapper function for read.csv()
+```{r}
+test_that("ID imported as integer",{
+  imported <- headr("datasets/TPM_sim_dataset_20180607.csv")
+  expect_true(is.integer(imported[1,1]))
+})
+
+test_that("time imported as character",{
+  imported <- headr("datasets/TPM_sim_dataset_20180607.csv")
+  expect_true(is.character(imported[1,3]))
+})
+
+test_that("concentrations imported as numeric",{
+  imported <- headr("datasets/TPM_sim_dataset_20180607.csv")
+  expect_true(is.numeric(imported[1,4]))
+})
+```
+
+### Testing numericTime()
+```{r}
+test_that("numbers shouldn't work",{
+  expect_error(numericTime(5.37))
+})
+
+test_that("strings without colon shouldn't work",{
+  expect_true(is.na(numericTime("546")))
+  expect_true(is.na(numericTime("5.46")))
+})
+
+test_that("single digit & double digit times should work",{
+  expect_equal(5.5, numericTime("5:30"))
+  expect_equal(12.0, numericTime("12:00"))
+  ## notice we don't test for real clock times
+  ## we could add this into the function later
+  expect_equal(25.75, numericTime("25:45"))
+})
+
+test_that("differences in time can now be calculated", {
+  expect_equal(2, numericTime("5:00") - numericTime("3:00"))
+  expect_equal(4.5, numericTime("4:30"), numericTime("12:00"))
+})
+
+test_that("vectorized application succeeds",{
+  expect_equal(c(12, 1.5), numericTime(c("12:00", "1:30")))
+})
 ```
 
