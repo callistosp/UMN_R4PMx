@@ -41,7 +41,7 @@ excel <- read.csv("datasets/TPM_sim_dataset_20180607.csv", as.is = T, stringsAsF
 Can also use file.choose() or absolute filepath (instead of relative to working directory) to select files you want to import.
 
 ### Arguments to modify output
-  include, warning, message, etc.
+  include, warning, message, echo, etc.
 
 I always import ALL datasets and packages in my first chunk of code. This way you don't need to hunt down the line where data was imported, just re-run the first chunk.
 
@@ -50,15 +50,15 @@ I always import ALL datasets and packages in my first chunk of code. This way yo
 ## Data types in R
 There are multiple ways to represent data in R. Most of the time we work with numbers, and R uses different names for different types of numbers:
 
-	integer or int: any whole number.
+* integer or int: any whole number.
 	
-	numeric or num: numbers with a decimal. Also called double.
+*	numeric or num: numbers with a decimal. Also called double.
 
 When we are working with text, there are multiple ways to represent them in R as well:
 
-	character or chr: basic representation of a string
+*	character or chr: basic representation of a string
 	
-	Factor: R’s representation of an enumerated data type (set of named levels)
+*	Factor: R’s representation of an enumerated data type (set of named levels)
 
 Most of the time we want to work with text as a character because they are easier to manipulate. Numbers can also be treated as a character, but this is typically undesirable because we cannot perform any arithmetic manipulations on numbers when they are in this format.
 ```{r}
@@ -71,7 +71,9 @@ str(var.c)
 ```
 
 
-A third data type is the logical (or boolean) type (TRUE or T, FALSE or F). These are typically generated using logical tests
+A third data type is the logical (or boolean) type (TRUE or T, FALSE or F). These are typically generated using logical tests.
+
+Vectors contain the same data type. A vector of vectors create a matrix or a data.frame. Most of the time you will use data.frames to store your data since each vector can contain a different data type.
 ```{r}
 vec.1 <- c(1:5)
 str(vec.1)
@@ -91,7 +93,7 @@ str(df)
 
 \newpage
 
-## Some comments about reproducibility
+## Some comments about reproducibility & readability
 ### The importance of readability
 A bad example of readability
 ```{r}
@@ -133,15 +135,15 @@ Everytime you modify a file, you have created a new "version" of it. Version con
 
 ### GitHub glossary
 
-Commit
+Commit: File changes saved to your local database
 
-Push
+Push: File changes saved to your online database
 
-Pull 
+Pull: Bring online changes to your local workspace
 
-Fork
+Fork: Create a personal copy of someone else's work
 
-Branch
+Branch: Workspace to try implementing new feature without worrying about messing up existing function
 
 
 ### Repositories

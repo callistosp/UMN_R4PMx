@@ -134,6 +134,7 @@ $(document).ready(function () {
 </div>
 <div id="useful-keyboard-shortcuts" class="section level3">
 <h3>Useful keyboard shortcuts</h3>
+<p>(Mac Users use command instead of Ctrl)</p>
 <p>Ctrl-Alt-I: Insert new chunk</p>
 <p>Ctrl-Enter: Run current line of code (multiple if highlighted)</p>
 <p>Ctrl-Shift-C: Comment/uncomment selected lines</p>
@@ -150,7 +151,7 @@ excel &lt;- read.csv(&quot;datasets/TPM_sim_dataset_20180607.csv&quot;, as.is = 
 </div>
 <div id="arguments-to-modify-output" class="section level3">
 <h3>Arguments to modify output</h3>
-<p>include, warning, message, etc.</p>
+<p>include, warning, message, echo, etc.</p>
 <p>I always import ALL datasets and packages in my first chunk of code. This way you don’t need to hunt down the line where data was imported, just re-run the first chunk.</p>
 
 </div>
@@ -226,81 +227,6 @@ write.csv(filteredBaseline, &quot;datasets/Baseline_sim_dataset_CompletersOnly_2
 
 </div>
 </div>
-<div id="function-writing" class="section level2">
-<h2>Function Writing</h2>
-<div id="a-trivial-example" class="section level3">
-<h3>A trivial example</h3>
-<pre class="r"><code>sumMinusOne &lt;- function(x){
-  output &lt;- 0
-  for(i in 1:length(x)){
-    output &lt;- output + x[i]
-  }
-  return(output-1)
-}
-
-sumMinusOne(2:4)</code></pre>
-<pre><code>## [1] 8</code></pre>
-</div>
-</div>
-<div id="when-would-i-ever-use-this" class="section level2">
-<h2>When would I ever use this?</h2>
-<div id="example-1-wrapper-function" class="section level3">
-<h3>Example 1: Wrapper function</h3>
-<p>Problem: importing files with multiple headers causes the data type to be interpretted incorrectly, causing resulting in manual typecasting for multiple rows (annoying!)</p>
-<pre class="r"><code>## dataset imported using read.csv()
-str(excel)</code></pre>
-<pre><code>## 'data.frame':    30 obs. of  4 variables:
-##  $ subjectid: chr  &quot;SID&quot; &quot;3&quot; &quot;4&quot; &quot;6&quot; ...
-##  $ var1     : chr  &quot;m/d/y&quot; &quot;5/4/2018&quot; &quot;5/5/2018&quot; &quot;5/6/2018&quot; ...
-##  $ var2     : chr  &quot;hh:mm&quot; &quot;5:40&quot; &quot;5:41&quot; &quot;5:42&quot; ...
-##  $ var3     : chr  &quot;ug/mL&quot; &quot;0.156&quot; &quot;0.157&quot; &quot;0.158&quot; ...</code></pre>
-<pre class="r"><code>excel$subjectid &lt;- as.integer(excel$subjectid)
-excel$var3 &lt;- as.double(excel$var3)</code></pre>
-<p>Solution: write a wrapper function that assigns correct header row while maintaining data types.</p>
-<pre class="r"><code>headr &lt;- function(file, header.row=1, data.start=3){
-  headers &lt;- read.csv(file = file, skip=header.row-1, header = F, nrows = 1, as.is = T)
-  dataset &lt;- read.csv(file=file, skip = data.start-1, header = F, as.is=T)
-  names(dataset) &lt;- headers
-  return(dataset)
-}
-
-## dataset imported using headr()
-str(topiramateData)</code></pre>
-<pre><code>## 'data.frame':    29 obs. of  4 variables:
-##  $ subjectid: int  3 4 6 7 11 16 35 38 39 40 ...
-##  $ var1     : chr  &quot;5/4/2018&quot; &quot;5/5/2018&quot; &quot;5/6/2018&quot; &quot;5/7/2018&quot; ...
-##  $ var2     : chr  &quot;5:40&quot; &quot;5:41&quot; &quot;5:42&quot; &quot;5:43&quot; ...
-##  $ var3     : num  0.156 0.157 0.158 0.159 0.16 0.161 0.162 0.163 0.164 0.165 ...</code></pre>
-<p>Notice how few arguments need to be filled out manually each time you import a file using the helper function since you are allowed to set your defaults.</p>
-</div>
-<div id="example-2-dealing-with-times" class="section level3">
-<h3>Example 2: Dealing with Times</h3>
-<p>Problem: RedCap stores my times as a character string (“6:45”), but I want to calculate the difference between observations.</p>
-<p>Solution: write a function to use this time and the next time you encounter clock times</p>
-<pre class="r"><code>numericTime &lt;- function(vec){
-  ## separate hours and minutes into a vector
-  sapply(strsplit(vec,&quot;:&quot;),
-         function(x) {
-           ## convert to numeric type to allow arithmetic operations
-           x &lt;- as.numeric(x)
-           ## numeric time = hours + (minutes/60) rounded to two decimals
-           round(x[1]+x[2]/60,2)
-         }
-  )
-}
-
-topiramateData$TIME &lt;- numericTime(topiramateData$var2)</code></pre>
-</div>
-</div>
-<div id="a-general-rule-of-thumb" class="section level2">
-<h2>A general rule of thumb:</h2>
-<p>If you find yourself copying code within or between files, you should probably just write a function. Better still, add functions to a personal R package that you can easily import and share.</p>
-<div id="great-resource-for-learning-more-about-writing-functions" class="section level3">
-<h3>Great resource for learning more about writing functions</h3>
-<p><a href="http://adv-r.had.co.nz/Functional-programming.html" class="uri">http://adv-r.had.co.nz/Functional-programming.html</a></p>
-
-</div>
-</div>
 <div id="version-control" class="section level2">
 <h2>Version control</h2>
 <div id="whats-that-mean" class="section level3">
@@ -309,11 +235,11 @@ topiramateData$TIME &lt;- numericTime(topiramateData$var2)</code></pre>
 </div>
 <div id="github-glossary" class="section level3">
 <h3>GitHub glossary</h3>
-<p>Commit</p>
-<p>Push</p>
-<p>Pull</p>
-<p>Fork</p>
-<p>Branch</p>
+<p>Commit: File changes saved to your local database</p>
+<p>Push: File changes saved to your online database</p>
+<p>Pull: Bring online changes to your local workspace</p>
+<p>Fork: Create a personal copy of someone else’s work</p>
+<p>Branch: Workspace to try implementing new feature without worrying about messing up existing function</p>
 </div>
 <div id="repositories" class="section level3">
 <h3>Repositories</h3>
