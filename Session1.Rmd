@@ -124,7 +124,7 @@ completers <- select(topiramateData, subjectid)
 filteredBaseline <- left_join(completers, baselineData, by= "subjectid")
 
 ## save filteredBaseline
-write.csv(filteredBaseline, "datasets/Baseline_sim_dataset_CompletersOnly_20180607.csv", row.names = F)
+# write.csv(filteredBaseline, "datasets/Baseline_sim_dataset_CompletersOnly_20180607.csv", row.names = F)
 ```
 Tip: Use "camel case" to separate words within a variable name by capitalizing the first letter of a new word, e.g. baselineData. This applies not only to coding within R, but also maintaining a proper audit trail for all your files!
 
