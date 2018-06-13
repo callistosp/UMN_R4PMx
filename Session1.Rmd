@@ -2,7 +2,7 @@
 title: 'Session 1: Data Assembly'
 author: "Samuel P Callisto"
 date: "June 7, 2018"
-output: html_document
+output: pdf_document
 ---
 
 ## Using R Markdown
@@ -28,7 +28,9 @@ packages <- c("devtools","tidyverse")
 if(any(!(packages %in% installed.packages()[,"Package"]))){
   install.packages(packages[which(!packages %in% installed.packages()[,"Package"])])
 }
-if(!("dataTools" %in% installed.packages()[,"Package"])) devtools::install_github("callistosp/dataTools")
+if(!("dataTools" %in% installed.packages()[,"Package"])){
+  devtools::install_github("callistosp/dataTools")
+} 
 ```
 ```{r, warning=F, message=F}
 ## load packages
@@ -62,9 +64,10 @@ When we are working with text, there are multiple ways to represent them in R as
 
 Most of the time we want to work with text as a character because they are easier to manipulate. Numbers can also be treated as a character, but this is typically undesirable because we cannot perform any arithmetic manipulations on numbers when they are in this format.
 ```{r}
-var <- 3
+var <- as.integer(3)
 str(var)
-var*2
+var2 <- var*2
+str(var2)
 
 var.c <- as.character(var)
 str(var.c)
@@ -75,7 +78,7 @@ A third data type is the logical (or boolean) type (TRUE or T, FALSE or F). Thes
 
 Vectors contain the same data type. A vector of vectors create a matrix or a data.frame. Most of the time you will use data.frames to store your data since each vector can contain a different data type.
 ```{r}
-vec.1 <- c(1:5)
+vec.1 <- 1:5
 str(vec.1)
 
 vec.2 <- c("a", "b", "c", "d", "e")
@@ -87,6 +90,10 @@ str(vec.3)
 df <- data.frame(vec.1, vec.2, vec.3)
 names(df) <- c("numbers", "letters", "vowels")
 
+str(df)
+
+## convert from Factor to character data type
+df$letters <- as.character(df$letters)
 str(df)
 ```
 
@@ -107,8 +114,8 @@ Can anyone guess what this line of code is accomplishing?
 A good example of readability
 ```{r}
 ## import data
-baselineData <- headr("datasets/Baseline_sim_dataset_AllSubjects_20180607.csv")
-topiramateData <- headr("datasets/TPM_sim_dataset_20180607.csv")
+baselineData <- read.csv("datasets/Baseline_sim_dataset_AllSubjects_20180607.csv")
+topiramateData <- read.csv("datasets/TPM_sim_dataset_20180607.csv")
 
 ## create completers subset from topiramateData
 completers <- select(topiramateData, subjectid)
@@ -135,7 +142,7 @@ Everytime you modify a file, you have created a new "version" of it. Version con
 
 ### GitHub glossary
 
-Commit: File changes saved to your local database
+Commit: File changes saved to your local machine
 
 Push: File changes saved to your online database
 
