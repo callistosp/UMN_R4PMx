@@ -8,3 +8,10 @@ Summer 2018 R workshop content put on by ECP senior students
 * Code Reproducibility & Readability
 * Function Writing
 * Version Control
+
+## Session 2: 6/20/18
+### Topics
+* Data wrangling in R
+* Useful base `R` functions
+* Some distributions from the `stats` package
+* Building a data set with `dplyr`, statistical distributions and base `R` functions
