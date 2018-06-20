@@ -1,0 +1,301 @@
+---
+title: 'Session 2: Data Manipulation'
+author: "Dave Margraf"
+date: "June 20, 2018"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+    number_sections: true
+---
+
+# The [`dplyr`](https://dplyr.tidyverse.org/) package
+The provides a grammar for data manipulation.
+
+## Load the dplyr package and data
+```{r, message=FALSE}
+library(dplyr)
+```
+Load the `Theoph` data set and save it as a data frame.
+```{r}
+df <- data.frame(Theoph)
+```
+
+We can use the [`dim()`](https://www.rdocumentation.org/packages/base/versions/3.5.0/topics/dim) and [`head()`](https://www.rdocumentation.org/packages/utils/versions/3.5.0/topics/head) functions from base `R` to find the dimensions and take a look at the data.
+```{r}
+dim(df)
+head(df)
+```
+
+Alternately, we can load the data as a tibble, which is a specialized data frame, with the [`as_tibble()`](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html) function.  
+```{r}
+df <- as_tibble(Theoph)
+
+df
+```
+Variable definitions for the `Theoph` data set:
+
++ Wt - weight of the subject (kg)
++ Dose - dose of theophylline administered orally to the subject (mg/kg)
++ Time - time since drug administration when the sample was drawn (hr)
++ conc - theophylline concentration in the sample (mg/L)
+
+## [`filter()`](https://dplyr.tidyverse.org/reference/filter.html)    
+
+The filter verb subsets the data by rows (observations). That is, it extracts particular observations based their values.
+
+Let's subset the theophylline data by weight of 70 kg or more.
+```{r}
+filter(df, Wt >= 70)
+```
+
+We can subset the data further with additional arguments.
+```{r}
+filter(df, Wt >= 70, Dose >= 4)
+```
+## [`select()`](https://dplyr.tidyverse.org/reference/select.html)  
+
+The select verb subsets the data by columns (variables). That is, it extracts particular variables based on their names.
+
+We can extract a vector by naming one variable.
+```{r}
+select(df, conc)
+```
+
+We can drop variables as well. Just place a minus sign in front of the variable you want to remove. The other variables will remain.
+```{r}
+select(df, -Wt)
+```
+
+Variables can be moved around if needed. Placing the `everything()` helper function will fill in the remaining variables you do not mention.
+```{r}
+select(df, Time, Subject, everything())
+```
+
+If you want to move a variable to the end of the data set, subtract then add it back. Also, you can rename variables within any `select()` function.
+```{r}
+select(df, -Wt, weight=Wt)
+```
+## [`rename()`](https://dplyr.tidyverse.org/reference/select.html)
+The rename verb keeps all variables unlike select, which keeps only the variables you mention.
+```{r}
+rename(df, weight = Wt) 
+```
+
+## An aside, the pipe operator `%>%`
+
+Takes the result from the left hand side and passes it into the function on the right hand side. This allows you to code in a more readable left-to-right fashion rather than nesting function within one another. For example, 
+
+
+Let's practice using the using the filter verb to find the observations for the first subject.
+```{r}
+df %>% filter(Subject == 3)
+```
+
+We can chain pipes together to really benefit from its usefulness. Find the observed Cmax for subject three.
+```{r}
+df %>% 
+  filter(Subject == 3) %>% 
+  select(conc) %>% 
+  max()
+```
+ 
+
+## [`mutate()`](https://dplyr.tidyverse.org/reference/mutate.html)
+
+The mutate verb adds new variables.  
+
+New variables can be made that are functions of existing variables. For example, perhaps we want to express time in seconds rather than hours, or convert weight in kilograms to pounds.
+
+Let's save this to `df` with the assignment operator `<-`.
+```{r}
+df <- df %>%
+  mutate(minutes = Time * 60,
+         lbs = Wt * 2.2046)
+
+df
+```
+
+## [`arrange()`](https://dplyr.tidyverse.org/reference/arrange.html)  
+The arrange verb changes the ordering of the rows.
+
+Sort the data by increasing weight.
+```{r}
+df %>% arrange(lbs)
+```
+
+Use `desc()` to sort a variable in descending order.
+
+```{r}
+df %>% arrange(desc(lbs))
+```
+
+Adding verbs together.
+
+```{r}
+df %>% 
+  filter(Time ==0) %>%
+  arrange(desc(lbs))
+```
+By subsetting and sorting the data we can see that three subjects have positive drug concentrations at time zero, and dose appears to be inversely proportional to weight.
+
+## [`group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+You will usually want to group data by some variable.
+
+Grouping doesn't change how the data looks (apart from listing
+how it's grouped), but it does change how it acts with the other `dplyr` verbs.
+```{r}
+df %>% 
+  group_by(Subject)
+```
+
+Now we can create a new columns specific to each subject with `group_by()` and `mutate()`. Let's find the Cmax and Tmax for each concentration-time profile. Since Tmax is related to the pharmacokinetic parameter Cmax, we can use the [`case_when()`](https://dplyr.tidyverse.org/reference/case_when.html) function to identify the time when Cmax is observed. This observation is saved in a temporary variable, `temp`, then dropped with the `select()` verb.
+```{r}
+df %>% 
+  group_by(Subject) %>% 
+  mutate(Cmax = max(conc),
+         temp = case_when(conc == Cmax ~ Time),
+         Tmax = max(temp, na.rm = T)) %>%
+  select(-temp)
+```
+
+## [`summarise()`](https://dplyr.tidyverse.org/reference/summarise.html) 
+The summarise verb reduces multiple values down to a single summary.
+
+```{r}
+df %>% 
+  summarise(meanWt = mean(Wt),
+            medWt = median(Wt),
+            n = n_distinct(Subject))
+```
+You may want to group data before summarizing.
+
+```{r}
+df %>%
+  group_by(Wt < 70) %>%
+  summarise(medDose = median(Dose),
+            meanDose = mean(Dose),
+            sdDose = sd(Dose))
+```
+
+# Let's build a data set
+## Some useful base `R` functions:
+[`seq()`](https://www.rdocumentation.org/packages/base/versions/3.5.0/topics/seq) generates regular sequences.  
+[`rep()`](https://www.rdocumentation.org/packages/base/versions/3.5.0/topics/rep) replicates values.  
+[`length()`](https://www.rdocumentation.org/packages/base/versions/3.5.0/topics/length) gets or sets the length of vectors (including lists) and factors.  
+[`unique()`](https://www.rdocumentation.org/packages/base/versions/3.5.0/topics/unique) returns a vector, data frame or array like `x` but with duplicate elements/rows removed.  
+[`sample()`](https://www.rdocumentation.org/packages/base/versions/3.5.0/topics/sample) takes a random sample of the specified size from the elements of `x` either with or without replacement.  
+[`round()`](https://www.rdocumentation.org/packages/base/versions/3.5.0/topics/Round) rounds the values to the specified number of decimal places (default 0).
+<!-- [`()`]() -->
+
+
+## Statistical functions in the `stats` package.
+[`rnorm()`](https://www.rdocumentation.org/packages/stats/versions/3.5.0/topics/Normal) random generation for the normal distribution with mean equal to `mean` and standard deviation equal to `sd`.
+[`runif()`](https://www.rdocumentation.org/packages/stats/versions/3.5.0/topics/Uniform) generates random deviates about the uniform distribution on the interval from `min` to `max`.
+<!-- [`rweibull()`](https://www.rdocumentation.org/packages/stats/versions/3.5.0/topics/Weibull) random generation for the Weibull distribution with parameters `shape` and `scale`. -->
+
+## Subjects
+To create a vector for 20 subjects we can start with the `seq()` function. 
+```{r}
+seq(1:20)
+```
+If we want longitudinal (repeated measures) data we can pipe this into the `rep()` function.
+```{r}
+seq(1:20) %>% rep(10)
+```
+This isn't quite right. We could use `arrange()` to fix this, but an easier way is to use the `each =` argument in `rep()`. Note: using `rep(10)` is equivalent to `rep(times=10)`.
+```{r}
+  seq(1:20) %>% rep(each=10)
+```
+That looks better. Let's store this in a tibble named `new`.
+```{r}
+new <- seq(1:20) %>% 
+        rep(each=10) %>%
+        as_tibble()
+```
+## Sampling times
+Next, we'll create a vector of sampling times.
+```{r}
+c(0,1,2,3,4,6,9,12,18,24)
+```
+Use the `rep()` function to match `id` and save it as the variable `time`.
+```{r}
+time <-
+  c(0,1,2,3,4,6,9,12,18,24) %>% 
+  rep(20)
+```
+We can add this to the data set with `mutate()` and change the name of `value` to `id` with `rename()`.
+```{r}
+new <- new %>%
+  rename(id = value) %>%
+  mutate(time = time)
+
+new
+```
+This is a good start but how often are sampling times this precise? We can add some variability and create a new variable. Sample from the the normal distribution with a mean of 1 and a small standard deviation, multiply by nominal time, then round the result.
+```{r}
+timeR <- time %>% 
+  '*'(rnorm(200,1,0.05)) %>% 
+  round(2)
+  
+new <- new %>% 
+      rename(nomTime = time) %>%
+      mutate(time = timeR)
+
+new
+```
+
+## Simulating binary or categorical variables with equal probability of being chosen
+
+```{r}
+sample(c(0,1), length(unique(new$id)), replace = T) %>% rep(each=10)
+```
+```{r}
+sample(c(1,2,3,4), length(unique(new$id)), replace = T) %>% rep(each=10)
+```
+
+## Use [`set.seed()`](https://www.rdocumentation.org/packages/simEd/versions/1.0.3/topics/set.seed) for reproducible results.
+```{r}
+set.seed(1907)
+sex <- sample(c(0,1), length(unique(new$id)), replace = T) %>% rep(each=10)
+```
+```{r}
+set.seed(1907)
+race <- sample(c(1,2,3,4), length(unique(new$id)), replace = T) %>% rep(each=10)
+
+new <- new %>%
+    mutate(sex = sex,
+           race)
+
+new
+```
+Note the argument in `mutate()' to keep the same variable name.
+
+## Simulate a uniform distribution of ages
+```{r}
+set.seed(1907)
+age <- runif(length(unique(new$id)), 18, 65) %>% rep(each=10) %>% floor()
+
+age
+
+new <- new %>% mutate(age)
+
+new
+```
+Check the documentation for `round()` to look at the `floor()` function and others related to it.
+<!-- ## The Weibull Distribution for age -->
+
+## Finding first and last observations for a subject in longitudial data
+```{r}
+new <- new %>% 
+  mutate(fid = as.numeric(!duplicated(new$id)),
+         lid = as.numeric(!duplicated(new$id, fromLast = T)))
+
+new
+```
+## Exercise: Summarize the new dataset.
+
+# Session information
+```{r}
+sessionInfo()
+```
