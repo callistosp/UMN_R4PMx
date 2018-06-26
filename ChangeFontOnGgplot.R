@@ -1,3 +1,6 @@
+## Solution found on webpage
+## http://blog.revolutionanalytics.com/2012/09/how-to-use-your-favorite-fonts-in-r-charts.html
+
 ## first run only
 install.packages('extrafont')
 ## importing fonts takes a few minutes
