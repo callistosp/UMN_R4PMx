@@ -31,11 +31,23 @@ $CMT
 $MAIN //C++
  double Vre = WEIGHT - (Vmu+Vlu+Var+Vve+Vli);
  double Qre = Qlu - (Qli+Qmu);
+ 
+// can put the ODE params in global too
+$GLOBAL
+// don't need semicolon at end of #define calls
+#define Cart (ART/Var)
 
 $ODE
-double Cart = ART/Var;
+// double Cart = ART/Var;
 double Cven = VEN/Vve;
 double Cli = LIVER/Vli;
 double Cmu = MUSCLE/Vmu;
 double Clu = LUNG/Vlu;
 double Cre = REST/Vre;
+
+dxdt_MUSCLE = Qmu*Cart - Qmu*(Cmu/(Kpmu/BP));
+dxdt_ART = Qlu*(Clu/(Kplu/BP)) - Qmu*Cart - Qli*Cart - Qre*Cart;
+dxdt_VEN = Qmu*(Cmu/(Kpmu/BP)) + Qli*(Cli/(Kpli/BP)) + Qre*(Cre/(Kpre/BP)) - Qlu*Cven;
+dxdt_LIVER = Qli * Cart - Qli*(Cli/(Kpli/BP)) - CL_hepatic*fup*(Cli/(Kpli/BP));
+dxdt_REST = Qre*(Cart-Cre/(Kpre/BP));
+dxdt_LUNG = Qlu * (Cven-Clu/(Kplu/BP));
