@@ -15,3 +15,12 @@ Summer 2018 R workshop content put on by ECP senior students
 * Useful base `R` functions
 * Some distributions from the `stats` package
 * Building a data set with `dplyr`, statistical distributions and base `R` functions
+
+## Session 3: 6/27/18
+### Topics
+* ggplot
+
+## Session 4: 7/5/18
+### Topics
+* simplePBPK.cpp & simplePBPK_script.R
+* voriPBPK.cpp & voriPBPK_script.R
