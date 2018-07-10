@@ -1,0 +1,32 @@
+---
+title: 'Session 5-2: Looping Structures'
+author: "Samuel P Callisto"
+date: "July 10, 2018"
+output: pdf_document
+---
+
+\tableofcontents
+
+\newpage
+
+## Part 2: Looping Structures
+Great reference: http://r4ds.had.co.nz/iteration.html#for-loop-variations
+
+Iteration is an important aspect of coding because it allows you to repeat operations multiple times without copy-pasting sections of your code within and between files. There are many looping structures available in R, but the most commonly used is the For-loop.
+
+### For-loops
+
+```{r}
+output <- vector("double", ncol(Theoph))  # 1. output
+for (i in seq_along(Theoph)) {            # 2. sequence
+  output[[i]] <- median(Theoph[[i]])      # 3. body
+}
+output
+```
+
+### Three essential components for a for-loop:
+* Output
+* Sequence
+* Body
+
+Other useful function: seq_along(x) is a wrapper for 1:length(x) which catches zero-length vector errors.
