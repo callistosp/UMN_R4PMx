@@ -60,13 +60,43 @@ output
 ### Exercise 1
 Create a for-loop that iterates through the mtcars dataset and calculates the mean for each column
 ```{r}
+## verify dataset has datatypes that can be averaged (e.g. double/numeric)
+head(mtcars)
+str(mtcars)
 
+## create empty vector for output with meaningful name
+mtcarsMeans <- vector("numeric", ncol(mtcars))
+
+## add column names to output vector
+names(mtcarsMeans) <- names(mtcars)
+
+## loop through columns to calculate mean for each
+for(i in seq_along(mtcars)){ # 1:length() or 1:ncol() also works
+  mtcarsMeans[i] <- mean(mtcars[[i]]) # mtcars[,i] also works
+}
+
+## display output
+mtcarsMeans
 ```
 
 ### Exercise 2
 Generate 10 random normals from each of $\mu$ = -10, 0, 10, 100
 ```{r}
+## create list of values to use
+mu <- c(-10, 0, 10, 100)
 
+## create output matrix
+logNormDraws <- matrix(0, ncol=4, nrow=10)
+# logNormDraws <- list()
+
+## loop through vector to generate random draw with given mean
+for(i in 1:length(mu)){
+  ## place results into columns
+  logNormDraws[,i] <- rnorm(10, mean=mu[i])
+}
+
+## display output
+logNormDraws
 ```
 
 ### Alternate for-loop structures
@@ -202,7 +232,28 @@ countToTen
 ### Exercise 3
 Calculate the mean for all columns in iris that contain numeric data using a while-loop
 ```{r}
+head(iris)
+str(iris)
 
+## create output container
+irisMeans <- list()
+
+## create variable for sequencing
+i <- 1
+
+## one loop for each column in mtcars
+while(i <= ncol(iris)){
+  if(is.numeric(iris[[i]])){
+    ## save name for list naming
+    varName <- names(iris)[i]
+    ## store mean in output container
+    irisMeans[[varName]] <- mean(iris[[i]])
+  }
+  ## manually iterate index
+  i <- i + 1
+}
+
+irisMeans
 ```
 
 ## Apply and Purrr
