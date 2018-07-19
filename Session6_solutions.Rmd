@@ -1,7 +1,7 @@
 ---
-title: 'Session 5-2: Looping Structures'
+title: 'Session 6: Looping Structures'
 author: "Samuel P Callisto"
-date: "July 10, 2018"
+date: "July 19, 2018"
 output: pdf_document
 ---
 
