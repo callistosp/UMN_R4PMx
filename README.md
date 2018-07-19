@@ -24,3 +24,14 @@ Summer 2018 R workshop content put on by ECP senior students
 ### Topics
 * simplePBPK.cpp & simplePBPK_script.R
 * voriPBPK.cpp & voriPBPK_script.R
+
+## Session 5: 7/11/18
+### Topics
+* xpose R package
+
+## Session 6: 7/19/18
+### Topics
+* Looping structures
+* For-loops
+* While-loops
+* Apply
