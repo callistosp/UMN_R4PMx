@@ -1,7 +1,7 @@
 ---
-title: 'Session 7: Function Writing'
+title: 'Session 8: Function Writing'
 author: "Samuel P Callisto"
-date: "June 9, 2018"
+date: "August 2, 2018"
 output: pdf_document
 ---
 
@@ -49,9 +49,9 @@ excel$var3 <- as.double(excel$var3)
 ```
 Solution: write a wrapper function that assigns correct header row while maintaining data types.
 ```{r}
-headr <- function(file, header.row=1, data.start=3){
+headr <- function(file, header.row=1, data.start=3, ...){
   headers <- read.csv(file = file, skip=header.row-1, header = F, nrows = 1, as.is = T)
-  dataset <- read.csv(file=file, skip = data.start-1, header = F, as.is=T)
+  dataset <- read.csv(file=file, skip = data.start-1, header = F, as.is=T, ...)
   names(dataset) <- headers
   return(dataset)
 }
