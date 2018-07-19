@@ -5,6 +5,9 @@ date: "August 2, 2018"
 output: pdf_document
 ---
 
+\tableofcontents
+\newpage
+
 ```{r, include=F}
 ## install packages if necessary
 packages <- c("testthat","tidyverse")
