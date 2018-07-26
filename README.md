@@ -36,7 +36,7 @@ Summer 2018 R workshop content put on by ECP senior students
 * While-loops
 * Apply
 
-## Session 7: 7/25/18
+## Session 7: 7/26/18
 ### Topics
 * Introduce Shiny
 * User interfaces
