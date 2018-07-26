@@ -14,7 +14,7 @@ ui <- fluidPage(
                          choices = c("Duck, Duck, Goose", "Duck, Duck, Grey duck", "What the Duck?"),
                          selected = "Duck, Duck, Goose"),
              p("Current Value:"),
-              verbatimTextOutput("slctOut")
+              verbatimTextOutput("selectOut")
            )),
     
     
@@ -132,7 +132,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  output$slctOut <- renderPrint({ input$select})
+  output$selectOut <- renderPrint({ input$select})
   output$checkboxOut <- renderPrint({ input$checkbox })
   output$checkGroupOut <- renderPrint({ input$checkGroup })
   output$dateOut <- renderPrint({ input$date })
