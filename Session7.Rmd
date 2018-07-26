@@ -1,11 +1,8 @@
 ---
-title: 'Session 9: An Introduction to Shiny'
+title: 'Session 7: An Introduction to Shiny'
 author: "Dave Margraf"
 date: "July 26, 2018"
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: '2'
   html_document:
     number_sections: F
     toc: yes
