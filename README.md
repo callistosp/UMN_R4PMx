@@ -42,3 +42,9 @@ Summer 2018 R workshop content put on by ECP senior students
 * User interfaces
 * Server function
 * Reactivity
+
+## Session 8: 8/2/18
+### Topics
+* Function Writing
+* Unit Testing
+* Function Example: Generate Observation Time
