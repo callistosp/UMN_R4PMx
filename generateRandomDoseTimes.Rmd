@@ -1,7 +1,7 @@
 ---
 title: "Generate Random Observation Times"
 author: "Samuel P Callisto"
-date: "July 19, 2018"
+date: "August 2, 2018"
 output: pdf_document
 ---
 
@@ -27,6 +27,8 @@ generateObsTime <- function(){
   ## return the observation time
   return(amObs)
 }
+
+generateObsTime()
 ```
 
 
