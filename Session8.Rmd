@@ -8,14 +8,13 @@ output: pdf_document
 \tableofcontents
 \newpage
 
-```{r, include=F}
+```{r, include=F, warning=F, message=F}
 ## install packages if necessary
 packages <- c("testthat","tidyverse")
 if(any(!(packages %in% installed.packages()[,"Package"]))){
   install.packages(packages[which(!packages %in% installed.packages()[,"Package"])])
 }
-```
-```{r, warning=F, message=F}
+
 ## load packages
 library(testthat)
 library(tidyverse)
@@ -43,14 +42,33 @@ sumMinusOne(2:4)
 Problem: importing files with multiple headers causes the data type to be interpretted incorrectly, causing resulting in manual typecasting for multiple rows (annoying!)
 ```{r, warning=F}
 ## Excel files
-excel <- read.csv("datasets/TPM_sim_dataset_20180607.csv", as.is = T, stringsAsFactors = T, header = T)
+excel <- read.csv("datasets/TPM_sim_dataset_20180607.csv", as.is = T, header = T)
 
 ## dataset imported using read.csv()
 str(excel)
 excel$subjectid <- as.integer(excel$subjectid)
-excel$var3 <- as.double(excel$var3)
+excel$DV <- as.double(excel$DV)
 ```
+
 Solution: write a wrapper function that assigns correct header row while maintaining data types.
+```{r}
+headr <- function(file, header.row=1, data.start=3){
+  headers <- read.csv(file = file, skip=header.row-1, header = F, nrows = 1, as.is = T)
+  dataset <- read.csv(file=file, skip = data.start-1, header = F, as.is=T)
+  names(dataset) <- headers
+  return(dataset)
+}
+
+## import same file using headr wrapper function
+topiramateData <- headr("datasets/TPM_sim_dataset_20180607.csv")
+
+## dataset imported using headr()
+str(topiramateData)
+```
+Notice how few arguments need to be filled out manually each time you import a file using the helper function since you are allowed to set your defaults.
+
+Slightly more advanced solution:
+You can use the ellipsis operator (...) to pass additional commands into the functions called by your wrapper function. In this example, by adding this to headr(), we can access arguments in read.csv()
 ```{r}
 headr <- function(file, header.row=1, data.start=3, ...){
   headers <- read.csv(file = file, skip=header.row-1, header = F, nrows = 1, as.is = T)
@@ -60,12 +78,26 @@ headr <- function(file, header.row=1, data.start=3, ...){
 }
 
 ## import same file using headr wrapper function
-topiramateData <- headr("datasets/TPM_sim_dataset_20180607.csv", stringsAsFactors= T)
+topiramateData <- headr("datasets/TPM_sim_dataset_20180607.csv", na.strings=-99)
 
 ## dataset imported using headr()
 str(topiramateData)
 ```
-Notice how few arguments need to be filled out manually each time you import a file using the helper function since you are allowed to set your defaults.
+
+### Anonymous Functions
+R allows you to call a function without naming it, called an Anonymous Function. This is useful typically used when you are applying a small function to a matrix using apply().
+```{r}
+apply(topiramateData, 2, range)
+```
+Due to the missing value in the DV column, we cannot get range values for this column. We need to use an anonymous function to pass the na.rm argument into the range function if we wish to apply it to the entire data.frame.
+```{r}
+## this approach will only give us an error:
+## apply(topiramateData, 2, range(na.rm=T))
+
+## instead we can use an anonymous function to access arguments
+apply(topiramateData, 2, function(x) range(x,na.rm=T))
+```
+By creating an anonymous function, we can get results for all the columns in the data.frame. We can create any sort of anonymous function to use in this context; let's look at a more complicated example.
 
 ### Example 2: Dealing with Times
 Problem: RedCap stores my times as a character string ("6:45"), but I want to calculate the difference between observations.
@@ -84,8 +116,10 @@ numericTime <- function(vec){
   )
 }
 
-topiramateData$TIME <- numericTime(topiramateData$var2)
+topiramateData$DECTIME <- numericTime(topiramateData$TIME)
 ```
+\underline{Challenge:} Use RStudio's built-in debug functions to verify that x <- as.numeric(x) is necessary in our function. 
+
 
 ## A general rule of thumb:
 If you find yourself copying code within or between files, you should probably just write a function. Better still, add functions to a personal R package that you can easily import and share.
@@ -110,7 +144,18 @@ test_that("vector sum minus one",{
 
 test_that("characters shouldn't work",{
   expect_error(sumMinusOne("test"))
+  expect_error(sumMinusOne("1"))
 })
+```
+
+There is no message if the test passes, but you will get an error if the tests fail. That means you can write multiple tests into your code and let them be tested automatically, alerting you if the change you just made altered the functionality in an unexpected way.
+
+```{r}
+try(
+test_that("characters shouldn't work",{
+  expect_error(sumMinusOne(1))
+})
+, outFile = stdout())
 ```
 
 ### Testing our wrapper function for read.csv()
