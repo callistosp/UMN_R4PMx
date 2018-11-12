@@ -3,11 +3,10 @@ title: 'Session 2: Data Manipulation'
 author: "Dave Margraf"
 date: "June 20, 2018"
 output:
-  html_document:
-    toc: yes
-    toc_depth: 2
-    number_sections: true
+  pdf_document
 ---
+
+\tableofcontents
 
 # The [`dplyr`](https://dplyr.tidyverse.org/) package
 The provides a grammar for data manipulation.

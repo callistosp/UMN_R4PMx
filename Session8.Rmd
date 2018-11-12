@@ -197,7 +197,7 @@ test_that("single digit & double digit times should work",{
 
 test_that("differences in time can now be calculated", {
   expect_equal(2, numericTime("5:00") - numericTime("3:00"))
-  expect_equal(4.5, numericTime("4:30"), numericTime("12:00"))
+  expect_equal(-7.5, numericTime("4:30") - numericTime("12:00"))
 })
 
 test_that("vectorized application succeeds",{

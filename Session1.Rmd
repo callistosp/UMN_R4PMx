@@ -5,6 +5,8 @@ date: "June 7, 2018"
 output: pdf_document
 ---
 
+\tableofcontents
+
 ## Using R Markdown
 Useful resource: R Markdown Cheatsheet
 https://www.rstudio.com/resources/cheatsheets/
